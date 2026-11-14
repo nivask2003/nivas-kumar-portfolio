@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://nivas-kumar-portfolio.vercel.app/sitemap.xml
