@@ -250,3 +250,4 @@ footer a{display:inline-flex;align-items:center;min-height:44px}
 .eyebrow::after{display:none}
 main h2,#contact h2{max-width:22ch}
 .cl h2{max-width:none}
+footer a{text-decoration:none}
