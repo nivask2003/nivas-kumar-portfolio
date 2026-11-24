@@ -251,3 +251,7 @@ footer a{display:inline-flex;align-items:center;min-height:44px}
 main h2,#contact h2{max-width:22ch}
 .cl h2{max-width:none}
 footer a{text-decoration:none}
+/* ===== perf: compositor-only status pulse ===== */
+.dot{position:relative;animation:none;box-shadow:none}
+.dot::after{content:"";position:absolute;inset:0;border-radius:50%;background:#3ddc97;animation:ping 2s ease-out infinite}
+@keyframes ping{70%,100%{transform:scale(3);opacity:0}}
