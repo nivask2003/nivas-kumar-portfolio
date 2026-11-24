@@ -59,7 +59,7 @@
 <form id="f" novalidate class="rv"><div><label for="n">Name</label><input id="n" autocomplete="name" required><div class="err" id="en"></div></div>
 <div><label for="e">Email</label><input id="e" type="email" autocomplete="email" required><div class="err" id="ee"></div></div>
 <div><label for="m">Message</label><textarea id="m" rows="5" required></textarea><div class="err" id="em"></div></div>
-<input id="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px"><button class="btn p" id="sb" type="submit">Send message</button><div class="err" id="ok" role="status" style="color:#3ddc97"></div></form></div></div></section>
+<div id="rc"></div><div class="err" id="erc" aria-live="polite"></div><input id="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px"><button class="btn p" id="sb" type="submit">Send message</button><div class="err" id="ok" role="status" style="color:#3ddc97"></div></form></div></div></section>
 </main>
 <footer><div class="wrap"><a class="logo" href="#home">NIVAS<span>.</span></a>
 <nav aria-label="Footer"><ul><li><a href="#about">About</a></li><li><a href="#skills">Skills</a></li><li><a href="#experience">Experience</a></li><li><a href="#projects">Projects</a></li><li><a href="#certificates">Certificates</a></li><li><a href="#contact">Contact</a></li><li><a href="https://www.linkedin.com/in/nivas-kumar-s-287941248/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li></ul></nav>
@@ -98,6 +98,11 @@ links.onclick=e=>{if(e.target.tagName==='A'){links.classList.remove('open');menu
  const so=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)L.forEach(a=>a.classList.toggle('act',a.getAttribute('href')==='#'+e.target.id))}),{rootMargin:'-45% 0px -50% 0px'});
  document.querySelectorAll('main section[id]').forEach(s=>so.observe(s));
 })();
+// reCAPTCHA v2 (loaded only when the contact form is near the viewport)
+(function(){const KEY='6LcVri8uAAAAAB94STEB3hOOKoo__4cF_GvJzWoW';
+ window.rcReady=function(){try{window.rcWid=grecaptcha.render('rc',{sitekey:KEY,theme:'dark'})}catch(x){}};
+ let done=false;const load=()=>{if(done)return;done=true;const s=document.createElement('script');s.src='https://www.google.com/recaptcha/api.js?onload=rcReady&render=explicit';s.async=true;s.defer=true;document.head.appendChild(s)};
+ new IntersectionObserver((es,o)=>{if(es[0].isIntersecting){load();o.disconnect()}},{rootMargin:'400px'}).observe(document.getElementById('f'));})();
 // audit: a11y, menu, resume
 [['n','en'],['e','ee'],['m','em']].forEach(([i,r])=>{const a=document.getElementById(i),b=document.getElementById(r);a.setAttribute('aria-describedby',r);a.setAttribute('maxlength',i==='m'?'2000':'120');b.setAttribute('aria-live','polite')});
 addEventListener('keydown',e=>{if(e.key==='Escape'&&links.classList.contains('open')){links.classList.remove('open');menu.setAttribute('aria-expanded',false);menu.focus()}});
@@ -124,9 +129,11 @@ f.addEventListener('submit',e=>{e.preventDefault();ok.textContent='';
  const D={name:n.value.trim(),email:document.getElementById('e').value.trim(),msg:m.value.trim()},sb=document.getElementById('sb'),C=EMAILJS;
  const fallback=()=>{location.href='mailto:nivask457@gmail.com?subject='+encodeURIComponent('Portfolio enquiry from '+D.name)+'&body='+encodeURIComponent(D.msg+'\n\n'+D.email);ok.style.color='#3ddc97';ok.textContent='Opening your email app to send the message…'};
  if(!C.service||!C.template||!C.key)return fallback();
+ if(window.rcWid!==undefined){const tk=grecaptcha.getResponse(window.rcWid);if(!tk){document.getElementById('erc').textContent='Please tick "I’m not a robot" before sending.';return}D.tok=tk}
+ document.getElementById('erc').textContent='';
  sb.disabled=true;sb.textContent='Sending…';ok.textContent='';
- fetch('https://api.emailjs.com/api/v1.0/email/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({service_id:C.service,template_id:C.template,user_id:C.key,template_params:{from_name:D.name,reply_to:D.email,message:D.msg}})})
- .then(r=>{if(!r.ok)throw 0;f.reset();ok.style.color='#3ddc97';ok.textContent='Thanks! Your message was sent. I will reply soon.'})
+ fetch('https://api.emailjs.com/api/v1.0/email/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({service_id:C.service,template_id:C.template,user_id:C.key,template_params:Object.assign({from_name:D.name,reply_to:D.email,message:D.msg},D.tok?{'g-recaptcha-response':D.tok}:{})})})
+ .then(r=>{if(!r.ok)throw 0;f.reset();if(window.rcWid!==undefined)grecaptcha.reset(window.rcWid);ok.style.color='#3ddc97';ok.textContent='Thanks! Your message was sent. I will reply soon.'})
  .catch(()=>{ok.style.color='#ff8f9b';ok.textContent='Could not send right now. Opening your email app instead…';setTimeout(fallback,1200)})
  .finally(()=>{sb.disabled=false;sb.textContent='Send message'});});
 // 3D + scroll motion
