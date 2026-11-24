@@ -258,3 +258,4 @@ footer a{text-decoration:none}
 /* recaptcha */
 #rc{min-height:78px}
 @media(max-width:400px){#rc{transform:scale(.85);transform-origin:0 0;min-height:66px}}
+.clist .rv:nth-child(5){transition-delay:.4s}
