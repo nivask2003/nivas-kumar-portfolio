@@ -255,3 +255,6 @@ footer a{text-decoration:none}
 .dot{position:relative;animation:none;box-shadow:none}
 .dot::after{content:"";position:absolute;inset:0;border-radius:50%;background:#3ddc97;animation:ping 2s ease-out infinite}
 @keyframes ping{70%,100%{transform:scale(3);opacity:0}}
+/* recaptcha */
+#rc{min-height:78px}
+@media(max-width:400px){#rc{transform:scale(.85);transform-origin:0 0;min-height:66px}}
